@@ -19,7 +19,7 @@ func NewCalculator(buckets []Bucket) (*calculator, error) {
 	}
 
 	return &calculator{
-		taxRanges: mapToDetailed(buckets),
+		taxRanges: mapToTaxRanges(buckets),
 	}, nil
 }
 
@@ -57,7 +57,7 @@ func validateBuckets(buckets []Bucket) error {
 	return nil
 }
 
-func mapToDetailed(classes []Bucket) []taxRange {
+func mapToTaxRanges(classes []Bucket) []taxRange {
 	result := make([]taxRange, 0, len(classes))
 	lastCeil := math.Inf(1)
 
