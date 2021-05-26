@@ -51,7 +51,7 @@ type calculator struct {
 func validateBuckets(buckets []Bucket) error {
 	for _, bucket := range buckets {
 		if bucket.AppliedAbove < 0 {
-			return errors.New("the buckets cannot be defined using negative amounts")
+			return errors.New("the buckets cannot have negative thresholds")
 		}
 	}
 	return nil

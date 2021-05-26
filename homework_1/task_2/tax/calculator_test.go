@@ -9,6 +9,10 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
+type TaxCalculator interface {
+	Calculate(amount float64) (float64, error)
+}
+
 type TestCase struct {
 	calculator TaxCalculator
 	input      float64
@@ -17,7 +21,24 @@ type TestCase struct {
 	expectingError bool
 }
 
-var testCases = []TestCase{
+func TestNewCalculator(t *testing.T) {
+	Convey("Given an array of valid tax buckets", t, func() {
+		calculator, err := tax.NewCalculator(sampleTaxes)
+		So(err, ShouldBeNil)
+		So(calculator, ShouldNotBeNil)
+	})
+
+	Convey("Given an array of containing an invalid tax bucket", t, func() {
+		invalidTaxes := append(sampleTaxes, tax.Bucket{
+			AppliedAbove: -10,
+			TaxRate:      0.5,
+		})
+		_, err := tax.NewCalculator(invalidTaxes)
+		So(err, ShouldNotBeNil)
+	})
+}
+
+var calculateTestCases = []TestCase{
 	{
 		calculator: newTaxCalculator(noTaxes),
 		input:      -10,
@@ -112,27 +133,10 @@ var sampleTaxes = []tax.Bucket{
 	},
 }
 
-func TestNewCalculator(t *testing.T) {
-	Convey("Given an array of valid tax buckets", t, func() {
-		calculator, err := tax.NewCalculator(sampleTaxes)
-		So(err, ShouldBeNil)
-		So(calculator, ShouldNotBeNil)
-	})
-
-	Convey("Given an array of containing an invalid tax bucket", t, func() {
-		invalidTaxes := append(sampleTaxes, tax.Bucket{
-			AppliedAbove: -10,
-			TaxRate:      0.5,
-		})
-		_, err := tax.NewCalculator(invalidTaxes)
-		So(err, ShouldNotBeNil)
-	})
-}
-
 var noTaxes []tax.Bucket
 
 func TestCalculator_Calculate(t *testing.T) {
-	for idx, tc := range testCases {
+	for idx, tc := range calculateTestCases {
 		Convey(fmt.Sprintf("Given test case #%v: %+v", idx, tc), t, func() {
 			actualOutput, actualErr := tc.calculator.Calculate(tc.input)
 			if tc.expectingError {
@@ -148,8 +152,4 @@ func TestCalculator_Calculate(t *testing.T) {
 func newTaxCalculator(taxBuckets []tax.Bucket) TaxCalculator {
 	calculator, _ := tax.NewCalculator(taxBuckets)
 	return calculator
-}
-
-type TaxCalculator interface {
-	Calculate(amount float64) (float64, error)
 }

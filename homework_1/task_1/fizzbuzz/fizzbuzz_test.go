@@ -120,7 +120,8 @@ func TestGetSequence(t *testing.T) {
 					t.Errorf(
 						"Actual output different than expected - actual: %v, expected: %v",
 						actualOutput,
-						tc.expectedOutput)
+						tc.expectedOutput,
+					)
 				}
 			}
 		}

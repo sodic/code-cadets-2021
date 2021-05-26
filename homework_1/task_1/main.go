@@ -17,12 +17,12 @@ var rules = []fizzbuzz.Rule{
 func main() {
 	start, end := parseArgs()
 
-	result, err := fizzbuzz.GetSequence(start, end, rules)
+	fizzBuzzSequence, err := fizzbuzz.GetSequence(start, end, rules)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(strings.Join(result, ", "))
+	fmt.Println(strings.Join(fizzBuzzSequence, ", "))
 }
 
 func parseArgs() (int, int) {

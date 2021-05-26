@@ -79,12 +79,12 @@ func fetchPokemonInfo(id string) (PokemonDTO, error) {
 
 	body, err := fetchAndReadData(pokemonApi + id)
 	if err != nil {
-		return pokemonInfo, errors.WithMessage(err, "failed to get Pokemon data")
+		return pokemonInfo, errors.WithMessage(err, "failed to get the Pokemon data")
 	}
 
 	err = json.Unmarshal(body, &pokemonInfo)
 	if err != nil {
-		return pokemonInfo, errors.WithMessage(err, "failed to parse the Pokemon API's response")
+		return pokemonInfo, errors.WithMessage(err, "failed to parse the Pokemon data")
 	}
 
 	return pokemonInfo, nil
@@ -93,13 +93,13 @@ func fetchPokemonInfo(id string) (PokemonDTO, error) {
 func fetchLocationInfo(locationUrl string) ([]LocationDTO, error) {
 	body, err := fetchAndReadData(locationUrl)
 	if err != nil {
-		return nil, errors.WithMessage(err, "failed to parse the location API's response")
+		return nil, errors.WithMessage(err, "failed to get the location data")
 	}
 
 	var locationInfo []LocationDTO
 	err = json.Unmarshal(body, &locationInfo)
 	if err != nil {
-		return nil, errors.WithMessage(err, "failed to parse the location API's response")
+		return nil, errors.WithMessage(err, "failed to unmarshall the location data")
 	}
 
 	return locationInfo, nil
@@ -116,16 +116,16 @@ func extractLocationNames(locations []LocationDTO) []string {
 func fetchAndReadData(url string) ([]byte, error) {
 	resp, err := http.Get(url)
 	if err != nil {
-		return nil, errors.WithMessage(err, "failed request towards the Pokemon API")
+		return nil, errors.WithMessagef(err, "failed request towards %s", url)
 	}
 
 	if resp.StatusCode == 404 {
-		return nil, errors.New("the specified resource does not exist")
+		return nil, errors.Errorf("the resource %s does not exist", url)
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, errors.WithMessage(err, "failed to read the Pokemon API's response")
+		return nil, errors.WithMessagef(err, "failed to read the response from %s", url)
 	}
 
 	return body, nil
